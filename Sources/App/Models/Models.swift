@@ -64,7 +64,7 @@ final class Block : Content  {
     }
     
     func addTransaction(transaction :Transaction) {
-        self.transactions.append(transaction)
+        self.transactions.append(Transaction.init(from: transaction.from, to: transaction.to, amount: transaction.amount))
     }
     
     init() {
@@ -100,11 +100,12 @@ final class Blockchain : Content  {
     
     func transactionsBy(drivingLicenseNumber :Driving) -> [Transaction] {
         
+        let drivingLicenseNumber2 = Driving.init(from: drivingLicenseNumber.from)
         var transactions = [Transaction]()
         self.blocks.forEach { block in
             block.transactions.forEach { transaction in
                 
-                if transaction.from == drivingLicenseNumber.from {
+                if transaction.from == drivingLicenseNumber2.from {
                     transactions.append(transaction)
                 }
             }
