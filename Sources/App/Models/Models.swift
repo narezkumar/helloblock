@@ -1,8 +1,8 @@
 
 //: Playground - noun: a place where people can play
 
-import Cocoa
 import Vapor
+import Crypto
 
 final class BlockchainNode :Content {
     
@@ -20,7 +20,10 @@ final class Driving : Content {
     
     init(from :String) {
         self.from = from
-        self.from = self.from.sha1Hash()
+        do {
+         let digest = try SHA1.hash(self.from)
+         self.from = digest.hexEncodedString()
+        }catch {}
     }
 }
 
@@ -34,7 +37,10 @@ final class Transaction : Content {
         self.to = to
         self.amount = amount
         self.from = from
-        self.from = self.from.sha1Hash()
+        do {
+            let digest = try SHA1.hash(self.from)
+            self.from = digest.hexEncodedString()
+        }catch {}
     }
 }
 
@@ -131,11 +137,18 @@ final class Blockchain : Content  {
     
     func generateHash(for block :Block) -> String {
         
-        var hash = block.key.sha1Hash()
+        var hash = "-"
+        do {
+            let digest = try SHA1.hash(block.key)
+            hash = digest.hexEncodedString()
+        }catch {}
         
-        while(!hash.hasPrefix("00")) {
+        while(!hash.hasPrefix("000")) {
             block.nonce += 1
-            hash = block.key.sha1Hash()
+            do {
+                let digest = try SHA1.hash(block.key)
+                hash = digest.hexEncodedString()
+            }catch {}
             print(hash)
         }
         
@@ -143,40 +156,6 @@ final class Blockchain : Content  {
     }
     
 }
-
-// String Extension
-extension String {
-    
-    func sha1Hash() -> String {
-        
-        let task = Process()
-        task.launchPath = "/usr/bin/shasum"
-        task.arguments = []
-        
-        let inputPipe = Pipe()
-        
-        inputPipe.fileHandleForWriting.write(self.data(using: String.Encoding.utf8)!)
-        
-        inputPipe.fileHandleForWriting.closeFile()
-        
-        let outputPipe = Pipe()
-        task.standardOutput = outputPipe
-        task.standardInput = inputPipe
-        task.launch()
-        
-        let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
-        let hash = String(data: data, encoding: String.Encoding.utf8)!
-        return hash.replacingOccurrences(of: "  -\n", with: "")
-    }
-}
-
-
-
-
-
-
-
-
 
 
 
