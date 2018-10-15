@@ -59,12 +59,18 @@ class BlockchainService {
         return block
     }
     
-    func drivingrecords(transactions :Driving) -> [Transaction] {
+    func loyaltyRank(transactions :LoyaltyRank) -> [Transaction] {
         
-        let block = self.blockchain.transactionsBy(drivingLicenseNumber: transactions)
+        let block = self.blockchain.transactionsBy(passportLoyaltyRank: transactions)
         return block
     }
     
+    func phonenumber(transactions :PhoneNumber) -> [PhoneTransaction] {
+        
+        let block = self.blockchain.transactionsByPhone(phone: transactions)
+        return block
+    }
+
     func getBlockchain() -> Blockchain {
         return self.blockchain
     }

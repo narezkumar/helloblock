@@ -14,32 +14,78 @@ final class BlockchainNode :Content {
     
 }
 
-final class Driving : Content {
+final class PhoneNumber : Content {
     
-    var from :String
+    var isocountry :String
     
-    init(from :String) {
-        self.from = from
+    init(isocountry :String) {
+        self.isocountry = isocountry
+    }
+}
+
+final class LoyaltyRank : Content {
+    
+    var passport :String
+    
+    init(passport :String) {
+        self.passport = passport
         do {
-         let digest = try SHA1.hash(self.from)
-         self.from = digest.hexEncodedString()
+         let digest = try SHA1.hash(self.passport)
+         self.passport = digest.hexEncodedString()
         }catch {}
+    }
+}
+
+final class PhoneTransaction : Content {
+    
+    var phone_number :String
+    var phone_region :String
+    var phone_postal_code :String
+    var phone_iso_country :String
+    var phone_voice :String
+    var phone_sms :String
+    var isavailable :String
+    
+    init(phone_number :String, phone_region :String, phone_postal_code :String, phone_iso_country :String, phone_voice :String, phone_sms :String, isavailable :String) {
+        self.phone_number = phone_number
+        self.phone_region = phone_region
+        self.phone_postal_code = phone_postal_code
+        self.phone_iso_country = phone_iso_country
+        self.phone_voice = phone_voice
+        self.phone_sms = phone_sms
+        self.isavailable = isavailable
     }
 }
 
 final class Transaction : Content {
     
-    var from :String
-    var to :String
-    var amount :Double
-    
-    init(from :String, to :String, amount :Double) {
-        self.to = to
-        self.amount = amount
-        self.from = from
+    var passport :String
+    var spent :String
+    var used :String
+    var level :String
+    var phone_number :String
+    var phone_region :String
+    var phone_postal_code :String
+    var phone_iso_country :String
+    var phone_voice :String
+    var phone_sms :String
+    var isavailable :String
+
+    init(passport :String, spent :String, used :String, level :String, phone_number :String, phone_region :String, phone_postal_code :String, phone_iso_country :String, phone_voice :String, phone_sms :String, isavailable :String) {
+        self.passport = passport
+        self.spent = spent
+        self.used = used
+        self.level = level
+        self.phone_number = phone_number
+        self.phone_region = phone_region
+        self.phone_postal_code = phone_postal_code
+        self.phone_iso_country = phone_iso_country
+        self.phone_voice = phone_voice
+        self.phone_sms = phone_sms
+        self.isavailable = isavailable
         do {
-            let digest = try SHA1.hash(self.from)
-            self.from = digest.hexEncodedString()
+            let digest = try SHA1.hash(self.passport)
+            self.passport = digest.hexEncodedString()
         }catch {}
     }
 }
@@ -55,16 +101,14 @@ final class Block : Content  {
     
     var key :String {
         get {
-            
             let transactionsData = try! JSONEncoder().encode(self.transactions)
             let transactionsJSONString = String(data: transactionsData, encoding: .utf8)
-            
             return String(self.index) + self.previousHash + String(self.nonce) + transactionsJSONString!
         }
     }
     
     func addTransaction(transaction :Transaction) {
-        self.transactions.append(Transaction.init(from: transaction.from, to: transaction.to, amount: transaction.amount))
+        self.transactions.append(Transaction.init(passport: transaction.passport, spent: transaction.spent, used: transaction.used, level: transaction.level, phone_number: transaction.phone_number, phone_region: transaction.phone_region, phone_postal_code: transaction.phone_postal_code, phone_iso_country: transaction.phone_iso_country, phone_voice: transaction.phone_voice, phone_sms: transaction.phone_sms, isavailable: transaction.isavailable))
     }
     
     init() {
@@ -77,7 +121,7 @@ final class Blockchain : Content  {
     
     private (set) var blocks = [Block]()
     private (set) var nodes = [BlockchainNode]()
-    private (set) var drivingRecordSmartContract = DrivingRecordSmartContract()
+    private (set) var loyaltyRankSmartContract = LoyaltyRankSmartContract()
 
     init(genesisBlock :Block) {
         addBlock(genesisBlock)
@@ -98,15 +142,30 @@ final class Blockchain : Content  {
         self.blocks.append(block)
     }
     
-    func transactionsBy(drivingLicenseNumber :Driving) -> [Transaction] {
+    func transactionsBy(passportLoyaltyRank :LoyaltyRank) -> [Transaction] {
         
-        let drivingLicenseNumber2 = Driving.init(from: drivingLicenseNumber.from)
+        let twoLoyaltyRank = LoyaltyRank.init(passport: passportLoyaltyRank.passport)
         var transactions = [Transaction]()
         self.blocks.forEach { block in
             block.transactions.forEach { transaction in
                 
-                if transaction.from == drivingLicenseNumber2.from {
+                if transaction.passport == twoLoyaltyRank.passport {
                     transactions.append(transaction)
+                }
+            }
+        }
+        return transactions
+        
+    }
+    
+    func transactionsByPhone(phone :PhoneNumber) -> [PhoneTransaction] {
+        
+        var transactions = [PhoneTransaction]()
+        self.blocks.forEach { block in
+            block.transactions.forEach { transaction in
+                
+                if transaction.phone_iso_country == phone.isocountry {
+                    transactions.append(PhoneTransaction.init(phone_number: transaction.phone_number, phone_region: transaction.phone_region, phone_postal_code: transaction.phone_postal_code, phone_iso_country: transaction.phone_iso_country, phone_voice: transaction.phone_voice, phone_sms: transaction.phone_sms, isavailable: transaction.isavailable))
                 }
             }
         }
@@ -119,7 +178,7 @@ final class Blockchain : Content  {
         let block = Block()
         transactions.forEach { transaction in
             // applying smart contract
-            self.drivingRecordSmartContract.apply(transaction: transaction, allBlocks: self.blocks)
+            self.loyaltyRankSmartContract.apply(transaction: transaction, allBlocks: self.blocks)
             block.addTransaction(transaction: transaction)
         }
         
@@ -150,7 +209,7 @@ final class Blockchain : Content  {
                 let digest = try SHA1.hash(block.key)
                 hash = digest.hexEncodedString()
             }catch {}
-            print(hash)
+            //print(hash)
         }
         
         return hash

@@ -10,7 +10,8 @@ public func routes(_ router: Router) throws {
     router.post([BlockchainNode].self, at: "/nodes/register", use: blockchainController.registerNodes)
     router.get("/nodes", use :blockchainController.getNodes)
     router.get("/resolve", use:blockchainController.resolve)
-    router.post(Driving.self, at: "/driving", use: blockchainController.drivingrecords)
+    router.post(LoyaltyRank.self, at: "/loyaltyrank", use: blockchainController.loyaltyRank)
+    router.post(PhoneNumber.self, at: "/phonenumber", use: blockchainController.phonenumber)
 
 }
 

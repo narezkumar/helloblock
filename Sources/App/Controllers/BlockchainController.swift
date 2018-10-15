@@ -38,10 +38,13 @@ class BlockchainController {
         return self.blockchainService.getNextBlock(transactions :[transaction])
     }
     
-    func drivingrecords(req :Request, transaction :Driving) -> [Transaction] {
-        return self.blockchainService.drivingrecords(transactions: transaction)
+    func loyaltyRank(req :Request, transaction :LoyaltyRank) -> [Transaction] {
+        return self.blockchainService.loyaltyRank(transactions: transaction)
     }
     
+    func phonenumber(req :Request, transaction :PhoneNumber) -> [PhoneTransaction] {
+        return self.blockchainService.phonenumber(transactions: transaction)
+    }
     func getBlockchain(req :Request) -> Blockchain {
         return self.blockchainService.getBlockchain()
     }
