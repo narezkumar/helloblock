@@ -204,14 +204,13 @@ final class Blockchain : Content  {
             hash = digest.hexEncodedString()
         }catch {}
         
-        while(!hash.hasPrefix("000")) {
+        while(!hash.hasPrefix("0000")) {
             block.nonce += 1
             do {
                 let digest = try SHA1.hash(block.key)
                 hash = digest.hexEncodedString()
             }catch {}
-            print("P=\(hash)")
-            terminal.print("T=\(hash)")
+            terminal.print("SHA1 hash \(hash)")
 
         }
         
