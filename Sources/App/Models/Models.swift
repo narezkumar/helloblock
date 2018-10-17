@@ -196,7 +196,8 @@ final class Blockchain : Content  {
     }
     
     func generateHash(for block :Block) -> String {
-        
+        let terminal = Terminal()
+
         var hash = "-"
         do {
             let digest = try SHA1.hash(block.key)
@@ -209,7 +210,9 @@ final class Blockchain : Content  {
                 let digest = try SHA1.hash(block.key)
                 hash = digest.hexEncodedString()
             }catch {}
-            //print(hash)
+            print("P=\(hash)")
+            terminal.print("T=\(hash)")
+
         }
         
         return hash
